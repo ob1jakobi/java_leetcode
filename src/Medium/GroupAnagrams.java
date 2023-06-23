@@ -18,13 +18,8 @@ public class GroupAnagrams {
             }
             int hash = Arrays.hashCode(count);
             // The below commented code does the same thing as the un-commented code
-            //result.computeIfAbsent(hash, key -> new ArrayList<>());
-            //result.get(hash).add(s);
-            result.merge(hash, List.of(s), (currList, newList) -> {
-                List<String> mergedList = new ArrayList<>(currList);
-                mergedList.addAll(newList);
-                return mergedList;
-            });
+            result.computeIfAbsent(hash, key -> new ArrayList<>());
+            result.get(hash).add(s);
         }
         return new ArrayList<>(result.values());
     }
