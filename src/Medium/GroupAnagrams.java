@@ -3,6 +3,59 @@ package Medium;
 import java.util.*;
 
 public class GroupAnagrams {
+    /**
+     *
+     * @param strs
+     * @return
+     */
+    public static List<List<String>> groupAnagrams(String[] strs) {
+        if (strs.length == 1) {
+            return List.of(List.of(strs));
+        }
+        final int N_ALPHABET = 26;
+        HashMap<Integer, List<String>> countsMap = new HashMap<>();
+        for (String word: strs) {
+            int[] charCountArr = new int[N_ALPHABET];
+            for (char c: word.toCharArray()) {
+                charCountArr[c - 'a']++;
+            }
+            int countsKey = Arrays.hashCode(charCountArr);
+            /*
+            Much more efficient; if the key isn't in the map, then it creates a new ArrayList - however, regardless
+            whether the key already exists, the word will be added to the list that will always be present
+            at that stage.
+             */
+            countsMap.computeIfAbsent(countsKey, (key) -> new ArrayList<>());
+            countsMap.get(countsKey).add(word);
+            /* The below works, but is inefficient; if the list exists, then it re-creates the list just to add
+            ** a new element to the list
+            countsMap.merge(countsKey, List.of(word), (currentListForKey, newListForKey) -> {
+                ArrayList<String> mergedList = new ArrayList<>(newListForKey);
+                mergedList.addAll(currentListForKey);
+                return mergedList;
+            });
+             */
+        }
+        return new ArrayList<>(countsMap.values());
+    }
+
+    public static void main(String[] args) {
+        String[] strs1 = {"eat", "tea", "tan", "ate", "nat", "bat"};
+        String[] strs2 = {""};
+        String[] strs3 = {"a"};
+
+        String[][] all_strs = {strs1, strs2, strs3};
+
+        for (String[] strs: all_strs) {
+            System.out.printf("strs:\t%s%ngroupAnagrams(strs):\t%s%n%n",
+                    Arrays.toString(strs),
+                    groupAnagrams(strs)
+            );
+        }
+    }
+
+
+    /*
     final int N_LETTERS = 26;
 
     public static List<List<String>> groupAnagrams(String[] strs) {
@@ -61,4 +114,5 @@ public class GroupAnagrams {
 
         System.out.printf("hash1:\t%d%nhash2:\t%d%n", hash1, hash2);
     }
+     */
 }
