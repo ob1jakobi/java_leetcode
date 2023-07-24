@@ -45,6 +45,10 @@ class ListNode {
 public class RemoveNthNodeFromEndOfList {
 
     public static void printList(ListNode head) {
+	if (head == null) {
+	    out.println("[]");
+	    return;
+	}
 	StringBuilder sb = new StringBuilder();
 	sb.append('[');
 	ListNode n;
@@ -56,25 +60,54 @@ public class RemoveNthNodeFromEndOfList {
     }
 
 
+    /**
+     * <p>In order to remove the correct node on a single pass, we start counting the nodes from the
+     * head of the list, <code>head</code>. The first node, which is <code>head</code>, is index 0.
+     * We initialize two different nodes that are used for separate purposes:
+     * <ul>
+     *    <li>cNode: the node that represents the currently iterated node in the list. This is
+     *        initially initialized to `head` and iterates over every node in the list.</li>
+     *    <li>rNode: the node that will be placed before the node that is to be removed. This is
+     *        also initially initialized to `head`, but is only incremented if the size of the
+     *        list (which we compute as we iterate over the list) is larger than `n`.</li>
+     * </ul>
+     *
+     * The reason we only increment <code>rNode</code> if the size of the list is larger than
+     * <code>n</code> is because <code>n</code> is the index position <em>from the last node in the
+     * list</em>. <code>rNode</code> must be the node directly preceeding the node to be removed.
+     * This cannot be the case if the given <code>n</code> is the same size as the list, which means
+     * we have to remove the head node, <code>head</code> and make <code>head</code> point to the
+     * next node in the list.</p>
+     *
+     * <p>The result that is returned will be the head of this list, but which specific node is
+     * returned (if any), depends on the node selected for deletion and the size of the list.
+     * If the node selected for deletion is the first node in the list, (i.e., it's the same node
+     * that <code>head</code> and <code>rNode</code> points to), then we make <code>head</code> point
+     * to the <code>next</code> field of the <code>rNode</code>. If the list is a singleton, then
+     * <code>head</code> will now point to <code>null</code>, because we've deleted the only node.
+     * If the list is not a singleton, then head will point to the 2nd node in the list.</p>
+     */
     public static ListNode removeNthFromEnd(ListNode head, int n) {
-	boolean rNodeHead;            // If the n - cSize < 0, then rNode is head
-        int cSize, diff;              // cSize: The known current size of list; diff: n - cSize
-	ListNode cNode, rNode, next;  // cNode: currently iterated node; rNode: node ID'd for removal
-
-	cSize = 0;
-	cNode = head;
-        while (cNode != null) {
-	    diff = cSize - n;
-	    rNodeHead = diff <= 0;
-	    rNode = rNodeHead ? head : rNode.next;
-	    cSize++;
-	    cNode = cNode.next;
+        ListNode cNode, rNode, next;
+	int size;
+        rNode = head;
+	size = 0;
+	for (cNode = head; cNode != null; cNode = cNode.next) {
+	    if (size > n) {            // Could also do if (size++ > n) {...}
+		rNode = rNode.next;
+	    }
+	    size++;
 	}
-	if (rNode.next == null) {
+        if (n == size) {
+	    // Remove the first node (set head to be rNode's next node)
+	    head = rNode.next;
 	    rNode = null;
+	} else if (n == 1) {
+	    // Remove the last node (set rNode's next node to be null)
+	    rNode.next = null;
 	} else {
+	    // Make rNode's next field point to the node after the next node
 	    next = rNode.next;
-	    rNode.val = next.val;
 	    rNode.next = next.next;
 	    next = null;
 	}
@@ -85,22 +118,32 @@ public class RemoveNthNodeFromEndOfList {
     public static void main(String[] args) {
 	ListNode head1 =
 	    new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-	ListNode head2 = new ListNode(1);
-	ListNode head3 = new ListNode(1, new ListNode(2));
+	ListNode head2 =
+	    new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
+	ListNode head3 =
+	    new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
+	ListNode head4 =
+	    new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
+	ListNode head5 =
+	    new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
+	ListNode head6 = new ListNode(1, new ListNode(2));
+	ListNode head7 = new ListNode(1, new ListNode(2));
+	ListNode head8 = new ListNode(1);
 
-	ListNode[] hs = {head1, head2, head3};
-	
-	int[] ns = {2, 1, 1};
+	ListNode[] heads = {head1, head2, head3, head4, head5, head6, head7, head8};
 
-	for (int i = 0; i < hs.length; i++) {
-	    ListNode l = hs[i];
-	    out.print("l:\t");
-	    printList(l);
+	int[] ns = {1,2,3,4,5,1,2,1};
+
+	for (int i = 0; i < ns.length; i++) {
+	    ListNode head = heads[i];
 	    int n = ns[i];
-	    out.println("n:\t" + n);
-	    out.print("r:\t");
-	    ListNode r = removeNthFromEnd(l, i + 1);
-	    printList(r);
+	    out.print("head:\t");
+	    printList(head);
+	    out.printf("n:\t%d\n", n);
+	    ListNode result = removeNthFromEnd(head, n);
+	    out.print("result:\t");
+	    printList(result);
+	    out.println();
 	}
     }
 }
