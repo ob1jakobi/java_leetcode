@@ -50,7 +50,35 @@ public class MergeTwoSortedLists {
 
 
     public static ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-        // TODO:
+        int val;
+	ListNode n, result;
+	n = null;
+	result = null;
+	while (list1 != null || list2 != null) {
+	    if (list1 == null) {
+		val = list2.val;
+		list2 = list2.next;
+	    } else if (list2 == null) {
+		val = list1.val;
+		list1 = list1.next;
+	    } else {
+		if (list1.val < list2.val) {
+		    val = list1.val;
+		    list1 = list1.next;
+		} else {
+		    val = list2.val;
+		    list2 = list2.next;
+		}
+	    }
+	    if (n == null) {
+		n = new ListNode(val);
+		result = n;
+	    } else {
+		n.next = new ListNode(val);
+		n = n.next;
+	    }
+	}
+	return result;
     }
 
 
