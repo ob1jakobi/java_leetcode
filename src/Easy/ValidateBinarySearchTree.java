@@ -1,3 +1,7 @@
+import static java.lang.System.out;
+import java.lang.StringBuilder;
+import java.util.ArrayList;
+import java.util.Stack;
 
 
 class TreeNode {
@@ -30,12 +34,66 @@ class TreeNode {
  * </ul></p>
  */
 public class ValidateBinarySearchTree {
+    public static String treeString(TreeNode root) {
+	TreeNode n;
+	StringBuilder sb = new StringBuilder();
+	sb.append("[");
+        recTreeString(root, sb);
+	sb.append(']');
+	return sb.toString();
+    }
+
+    /**
+     * Doesn't work as expected.
+     */
+    private static void recTreeString(TreeNode r, StringBuilder acc) {
+	if (r.left == null && r.right == null) {
+	    acc.append(r.val).append(", ");
+	    return;
+	} else if (r.left == null) {
+	    acc.append(r.val).append(", NULL, ");
+	    recTreeString(r.right, acc);
+	} else if (r.right == null) {
+	    acc.append(r.val).append(", ");
+	    recTreeString(r.left, acc);
+	    acc.append(", NULL");
+	} else {
+	    acc.append(r.val).append(", ");
+	    recTreeString(r.left, acc);
+	    recTreeString(r.right, acc);
+	    return;
+	}
+    }
 
     public static boolean isValidBST(TreeNode root) {
-	// TODO:
+	return validateBST(root, null, null);
+    }
+
+    private static boolean validateBST(TreeNode r, Integer low, Integer high) {
+	if (r == null) {
+	    return true;
+	}
+	boolean invalidLowRange = low != null && r.val <= low;
+	boolean invalidHighRange = high != null && r.val >= high;
+	if (invalidHighRange || invalidHighRange) {
+	    return false;
+	}
+	return validateBST(r.right, r.val, high) && validateBST(r.left, low, r.val);
     }
 
     public static void main(String[] args) {
-	// TODO:
+	TreeNode root1 = new TreeNode(2, new TreeNode(1), new TreeNode(3));
+	TreeNode root2b = new TreeNode(4, new TreeNode(3), new TreeNode(6));
+	TreeNode root2 = new TreeNode(5, new TreeNode(1), root2b);
+	TreeNode[] roots = {root1, root2};
+	boolean[] rs = {true, false};
+	for (int i = 0; i < roots.length; i++) {
+	    TreeNode r = roots[i];
+	    boolean ans = rs[i];
+	    out.printf("r:\t%s\nans:\t%b\nres:\t%b\n\n",
+		       treeString(r),
+		       ans,
+		       isValidBST(r));
+	}
     }
 }
